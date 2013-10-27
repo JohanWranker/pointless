@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+  <head>
+    <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+  </head>
+  <body>
+    <h1>Pointless registration</h1>
+    <b>Race 'dummy'</b>
+    <form action="/NewSailor" method="post">
+      <div><b>Sail Number</b><b>Name</b></div>
+      <div>Sail Number<textarea name="SailNo" rows="1" cols="10">
+      </textarea></div>
+      <div>Name<textarea name="Name" rows="1" cols="60"></textarea></div>
+      <div>SurName<textarea name="SurName" rows="1" cols="60"></textarea></div>
+      <div>LastName<textarea name="LastName" rows="1" cols="60"></textarea></div>
+      <div>Class<textarea name="Class" rows="1" cols="60"></textarea>
+      </div>
+      <div><input type="submit" value="New sailor"></div>
+    </form>
+    <hr>
+  </body>
+</html>
+{% endautoescape %}
+
