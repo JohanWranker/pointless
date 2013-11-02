@@ -3,21 +3,53 @@
 <html>
   <head>
     <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+    <script>
+        function showHint(str)
+        {
+            var xmlhttp;
+            if (str.length==0)
+            { 
+                document.getElementById("txtHint").innerHTML="";
+                return;
+            }
+            xmlhttp=new XMLHttpRequest();
+            xmlhttp.onreadystatechange=function()
+            {
+                if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                {
+                    document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
+                }
+            }
+            xmlhttp.open("GET","gethint?q="+str,true);
+            xmlhttp.send();
+        }
+    </script>
   </head>
   <body>
     <h1>Pointless registration</h1>
-    <b>Race 'dummy'</b>
+    <b>Registered</b> 
+    <table>
+    {% for sailor in SAILORS %}
+        <tr>
+            <td>{{ sailor.sailNo }}</td>
+            <td>{{ sailor.surName }}</td>
+            <td>{{ sailor.lastName }}</td>
+            <td>{{ sailor.boatClass }}</td>
+       </tr>
+    {% endfor %}
+    </table> 
+
     <form action="/NewSailor" method="post">
-      <div><b>Sail Number</b><b>Name</b></div>
-      <div>Sail Number<textarea name="SailNo" rows="1" cols="10">
+      First name: <input type="text" id="txt1" onkeyup="showHint(this.value)" />
+      <div>Sail Number<textarea name="SailNo" rows="1" cols="10" >
       </textarea></div>
-      <div>Name<textarea name="Name" rows="1" cols="60"></textarea></div>
       <div>SurName<textarea name="SurName" rows="1" cols="60"></textarea></div>
       <div>LastName<textarea name="LastName" rows="1" cols="60"></textarea></div>
       <div>Class<textarea name="Class" rows="1" cols="60"></textarea>
       </div>
       <div><input type="submit" value="New sailor"></div>
     </form>
+    <table>Suggestions: <span id="txtHint"></span></table> 
     <hr>
   </body>
 </html>

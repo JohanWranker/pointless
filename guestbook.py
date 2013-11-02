@@ -87,5 +87,6 @@ application = webapp2.WSGIApplication([
     ('/sign', Guestbook),
     ('/Registration', Registration),
     ('/NewSailor',NewSailor),
+    ('/gethint',GetHint),
 ], debug=True)
 
