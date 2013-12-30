@@ -33,12 +33,13 @@ class Registration(webapp2.RequestHandler):
         sailors_query = SailorsData.query(
             ancestor=RaceDataStore()).order(-SailorsData.registrationDate)
         sailors = sailors_query.fetch(10)
-
-        print "############### " + str(sailors)
+        raceId = self.request.get('RaceId','')
+        #print "############### " + str(sailors)
         
         template_values = {
             'DataStore': RaceDataStore().urlsafe(),
-            'SAILORS'  : sailors
+            'SAILORS'  : sailors,
+            'RACEID'   : raceId
         }
 
         template = JINJA_ENVIRONMENT.get_template('Registration.html')
@@ -46,17 +47,13 @@ class Registration(webapp2.RequestHandler):
 
 class GetHint(webapp2.RequestHandler):
     def get(self):
-        print "GetHint"
-        self.response.write("<tr>")
-        self.response.write("<td %s />" %("3619")) #,"Elias", "Wranker"))
-        self.response.write("</tr>")
-        #do until rs.EOF
-#  for each x in rs.Fields
-#    response.write("<tr><td><b>" & x.name & "</b></td>")
-#   response.write("<td>" & x.value & "</td></tr>")
-#  next
-#  rs.MoveNext
-#loop
+        print "GetHint *******************************"
+        self.response.write("%s|" %("3619"))
+        self.response.write("%s|" %("Elias")) #,"Elias", "Wranker"))
+        self.response.write("%s|" %("Wranker"))
+        print self.request.__dict__
+        print self.request.get('q','')
+        
         
 class NewSailor(webapp2.RequestHandler):
     def post(self):
@@ -68,3 +65,4 @@ class NewSailor(webapp2.RequestHandler):
         sailorsData.boatClass = self.request.get('Class')
         sailorsData.put()
         self.redirect('Registration')
+        

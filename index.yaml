@@ -16,6 +16,12 @@ indexes:
   - name: date
     direction: desc
 
+- kind: RaceModel
+  ancestor: yes
+  properties:
+  - name: date
+    direction: desc
+
 - kind: SailorsData
   ancestor: yes
   properties:

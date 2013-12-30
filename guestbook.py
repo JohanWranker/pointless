@@ -8,6 +8,8 @@ import jinja2
 import webapp2
 
 from Registration import *
+from UnitTestPage import *
+from Engine import *
 
 
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -42,6 +44,10 @@ class MainPage(webapp2.RequestHandler):
         greetings_query = Greeting.query(
             ancestor=guestbook_key(guestbook_name)).order(-Greeting.date)
         greetings = greetings_query.fetch(10)
+        
+        engine = Engine()
+        currentRace = engine.GetCurrentRace()
+        print "CurrentRace %s" %( currentRace)
 
         if users.get_current_user():
             url = users.create_logout_url(self.request.uri)
@@ -50,11 +56,14 @@ class MainPage(webapp2.RequestHandler):
             url = users.create_login_url(self.request.uri)
             url_linktext = 'Login'
 
+
+        
         template_values = {
             'greetings': greetings,
             'guestbook_name': urllib.quote_plus(guestbook_name),
             'url': url,
             'url_linktext': url_linktext,
+            'RACEID':  currentRace.urlsafe()
         }
 
         template = JINJA_ENVIRONMENT.get_template('index.html')
@@ -88,5 +97,6 @@ application = webapp2.WSGIApplication([
     ('/Registration', Registration),
     ('/NewSailor',NewSailor),
     ('/gethint',GetHint),
+    ('/UnitTest',UnitTestPage),
 ], debug=True)
 

@@ -1,7 +1,6 @@
 import webapp2
 from google.appengine.api import users
 
-
 class MainPage(webapp2.RequestHandler):
 
     def get(self):
