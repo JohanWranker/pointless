@@ -5,6 +5,8 @@ class RaceModel(ndb.Model):
     date = ndb.DateProperty(auto_now_add=True)
     raceId = ndb.IntegerProperty()
 
+
+#A model over a sailor - is used for the 'active sailors in a race and the 'sailors storage db'
 class SailorModel(ndb.Model):
     sailNo = ndb.StringProperty() #The complete sail number 
     tags = ndb.IntegerProperty(repeated =True) # The numeric part of the sailno
@@ -49,7 +51,9 @@ class Engine():
     def NewSailor(self, race, sailor):
         """Register a new sailor to a race"""
     
-        sailorsData = SailorModel(parent=self._GetRaceKey(race))
+        #parent=self._GetRaceKey(race)
+        raceId = self.GetCurrentRace()
+        sailorsData = SailorModel(parent=raceId)
         sailorsData.sailNo = sailor.sailNo
         numeric = 0
         sailorsData.tags = []
@@ -64,14 +68,29 @@ class Engine():
         sailorsData.lastName = sailor.lastName
         sailorsData.boatClass = sailor.boatClass
         sailorsData.put()
+        self.UpdateSailorsDb(sailorsData)
         
+    def UpdateSailorsDb(self,sailorsData):
+        s = SailorModel(parent = self.rootKey)
+        s.sailNo = sailorsData.sailNo
+        s.tags = sailorsData.tags 
+        s.surName = sailorsData.surName
+        s.lastName = sailorsData.lastName
+        s.boatClass = sailorsData.boatClass
+        s.registrationDate = sailorsData.registrationDate
+        s.put()
+
     def GetAllSailors(self,race):
         """ Returns all sailors in a specific race unordered"""
-        sailors = SailorModel.query(ancestor=self._GetRaceKey(race))
+        #ancestor=self._GetRaceKey(race)
+        raceId = self.GetCurrentRace()
+        sailors = SailorModel.query(ancestor=raceId).fetch()
         return sailors
         
     def PreFetchSailorsBySailno(self, sailNo):
-        sailors = SailorModel(SailorModel.tags == int(sailNo)).fetch()
+        print "looking for %s" %(int(sailNo))
+        sailors = SailorModel.query(SailorModel.tags == int(sailNo)).fetch()
+        print "number %s" % (len(sailors))
         return sailors
         
         

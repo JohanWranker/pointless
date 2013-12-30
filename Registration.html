@@ -3,68 +3,9 @@
 <html>
   <head>
     <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
-    <script>
-        function loadXMLString(txt)
-        {
-        if (window.DOMParser)
-          {
-          parser=new DOMParser();
-          xmlDoc=parser.parseFromString(txt,"text/xml");
-          }
-        else // Internet Explorer
-          {
-          xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
-          xmlDoc.async=false;
-          xmlDoc.loadXML(txt);
-          }
-        return xmlDoc;
-        }
-
-        function showHint(str)
-        {
-            var xmlhttp;
-            if (str.length==0)
-            { 
-                //document.getElementById("Suggestions").innerHTML="";
-                return;
-            }
-            xmlhttp=new XMLHttpRequest();
-            xmlhttp.onreadystatechange=function()
-            {
-                
-                if (xmlhttp.readyState==4 && xmlhttp.status==200)
-                {
-                    var table = document.getElementById("Suggestions")
-                    var tbody = table.getElementsByTagName("tbody")[0];
-                    var childNodes = tbody.childNodes;
-                    for (var row=0;row<childNodes.length;row++)
-                    {
-                        item = childNodes[row]
-                        item.parentNode.removeChild(item);
-                    }
-                    
-                    var arr = xmlhttp.responseText.split("|");
-                    
-                    var row   = document.createElement("tr");
-                    row.onclick=AddSailor("FFF")
-                    tbody.appendChild(row);
-                    var td    =  document.createElement("td");
-                    row.appendChild(td);
-                    for (var i=0;i<3;i++)
-                    {
-                        var item = document.createTextNode(arr[i]);
-                        td.appendChild(item);
-                    }
-                }
-            }
-            xmlhttp.open("GET","gethint?q="+str,true);
-            xmlhttp.send();
-        }
-        function AddSailor(str)
-        {
-            var raceId = {{ RACEID }}
-        
-        }
+    <script src="js/loadxmlstring.js"> 
+    </script>
+    <script src="js/registrationShowHint.js" >
     </script>
   </head>
   <body>
@@ -81,10 +22,10 @@
     {% endfor %}
     </table> 
 
-    <form action="/NewSailor?RaceId= {{ RACEID }}" method="post">
-      First name: <input type="text" id="txt1" onkeyup="showHint(this.value)" />
-      <div>Sail Number<textarea name="SailNo" rows="1" cols="10" >
-      </textarea></div>
+
+    <form action="/NewSailor?RaceId={{ RACEID }}" method="post">
+      First name: <input name="SailNo" type="text" id="txt1" onkeyup="showHint(this.value)" />
+      
       <div>SurName<textarea name="SurName" rows="1" cols="60"></textarea></div>
       <div>LastName<textarea name="LastName" rows="1" cols="60"></textarea></div>
       <div>Class<textarea name="Class" rows="1" cols="60"></textarea>
@@ -95,7 +36,7 @@
     <tbody>
     </tbody>
     </table>
-    <hr>
+    <hr/>
   </body>
 </html>
 {% endautoescape %}

@@ -7,6 +7,8 @@ from google.appengine.ext import ndb
 import jinja2
 import webapp2
 
+from Interfaces import *
+from Engine import *
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -34,7 +36,12 @@ class Registration(webapp2.RequestHandler):
             ancestor=RaceDataStore()).order(-SailorsData.registrationDate)
         sailors = sailors_query.fetch(10)
         raceId = self.request.get('RaceId','')
-        #print "############### " + str(sailors)
+        
+        engine=Engine()
+        sailors = engine.GetAllSailors('2356')
+        print "All sailors %s" % (sailors)
+
+
         
         template_values = {
             'DataStore': RaceDataStore().urlsafe(),
@@ -47,22 +54,29 @@ class Registration(webapp2.RequestHandler):
 
 class GetHint(webapp2.RequestHandler):
     def get(self):
-        print "GetHint *******************************"
-        self.response.write("%s|" %("3619"))
-        self.response.write("%s|" %("Elias")) #,"Elias", "Wranker"))
-        self.response.write("%s|" %("Wranker"))
-        print self.request.__dict__
-        print self.request.get('q','')
-        
+        #print "GetHint *******************************"
+        sailNo = self.request.get('q','')
+        engine=Engine()
+        sailors = engine.PreFetchSailorsBySailno(sailNo)
+        self.response.write('<sailors>')
+        for sailor in sailors:
+            self.response.write('<sailor sailNo="%s" surName="%s" lastName="%s"/>'%
+            (sailor.sailNo,sailor.surName, sailor.lastName))
+        self.response.write('</sailors>')
         
 class NewSailor(webapp2.RequestHandler):
     def post(self):
     
-        sailorsData = SailorsData(parent=RaceDataStore())
-        sailorsData.sailNo = self.request.get('SailNo')
-        sailorsData.surName = self.request.get('SurName')
-        sailorsData.lastName = self.request.get('LastName')
-        sailorsData.boatClass = self.request.get('Class')
-        sailorsData.put()
+        s = SailorData()
+        s.sailNo = self.request.get('SailNo')
+        s.surName = self.request.get('SurName')
+        s.lastName = self.request.get('LastName')
+        s.boatClass = self.request.get('Class')
+
+        raceId = self.request.get('RaceId','')
+        engine=Engine()
+        engine.NewSailor(raceId,s)
+        
         self.redirect('Registration')
+        
         
