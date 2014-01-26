@@ -19,7 +19,7 @@ class Index(webapp2.RequestHandler):
 
     def get(self):
         defaultClubName = 'empty'
-        activeClubName = self.request.get('club',defaultClubName)                
+        activeClubName = self.request.get('Club',defaultClubName)                
         engine = Engine()
         
         #Locate all clubnames and present those in a list
@@ -51,7 +51,7 @@ class NewRace(webapp2.RequestHandler):
         engine=Engine()
         engine.NewRace2(clubName)
         
-        self.redirect('/?club='+clubName)
+        self.redirect('/?Club='+clubName)
         
 
 

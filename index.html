@@ -12,16 +12,33 @@
             var r=confirm("Really create a new race? " + element.value);
             if (r==true)
             {
-            
               window.location="/NewRace?Club=" + element.value;
             }
         }
+        
+        function ClubUpdated()
+        {
+            var element = document.getElementById("ClubSelector")
+            window.location="/?Club=" + element.value;
+        }
+        function RaceUpdated()
+        {
+            var raceSelector = document.getElementById("RaceSelector");
+            document.getElementById("RegistrationButton").disabled= (raceSelector.value == "");
+        }
+        function SelectRegistration()
+        {
+            var club = document.getElementById("ClubSelector")
+            var raceSelector = document.getElementById("RaceSelector");
+            window.location="/Registration?Club=" + club.value+ "&Race=" +raceSelector.value;
+        }
+       
     </script>
   </head>
-  <body>
+  <body >
     <h1>This is PointLess</h1>
     <b>club:</b> 
-    <select id="ClubSelector">
+    <select id="ClubSelector" onchange="ClubUpdated()">
       <option value="{{ ACTIVE_CLUB }}">{{ ACTIVE_CLUB }}</option>
       {% for club in CLUBS %}
         <option  value="{{ club.name }}">{{ club.name }}</option>
@@ -29,19 +46,25 @@
     </select>
     <div/>
     <b>Race:</b>
-    <select>
-      <option value="empty">{{ RACES[0] }}</option>
+    <select id="RaceSelector" onchange="RaceUpdated()">
       {% for race in RACES %}
-        <option id="RaceSelector" value="{{ race }}">{{ race }}</option>
+        <option  value="{{ race }}">{{ race }}</option>
       {% endfor %}
     </select>
     <p/>
+    <div/>
     <button onclick="CreateNewRaceButtonAction()">Create new race</button> 
+    <div/>
+    <button id="RegistrationButton" onclick="SelectRegistration()">Registration</button> 
+    <div/>
     
-    <a href="Registration?RaceId={{ RACEID }}">Registration</a>
+    <a id="RegistrationLink" href="Registration?RaceId={{ RACEID }}">Registration</a>
   
     
   </body>
+  <footer>
+  <b>Developed and maintained by Johan Wranker</b>
+  </footer>
 </html>
 {% endautoescape %}
 

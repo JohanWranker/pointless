@@ -88,10 +88,7 @@ class Engine():
         assert (len(qry.fetch()) == 1 )
         activeRace = qry.fetch(1)[0]
         return activeRace        
-        
-
-   
-         
+                 
     def GetCurrentRaceId(self):
         allRaces = self.GetAllRaces()
         currentRace = "empty"
@@ -152,6 +149,13 @@ class Engine():
         sailors = SailorModel.query(ancestor=raceId).fetch()
         return sailors
         
+        
+    def GetAllSailors2(self,clubName, race):
+        key = ndb.Key(Club,'PointLESS')
+        clubKey = Club.query(Club.name == clubName, ancestor=key).fetch()[0].key
+        qry = RaceModel.query(RaceModel.date == race.date, RaceModel.raceId == race.raceId, ancestor=clubKey)
+        print "clubKey %s"%(clubKey)
+     
     def PreFetchSailorsBySailno(self, sailNo):
         #print "looking for %s" %(int(sailNo))
         sailors = SailorModel.query(SailorModel.tags == int(sailNo)).fetch()

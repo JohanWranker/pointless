@@ -35,10 +35,14 @@ class Registration(webapp2.RequestHandler):
         sailors_query = SailorsData.query(
             ancestor=RaceDataStore()).order(-SailorsData.registrationDate)
         sailors = sailors_query.fetch(10)
-        raceId = self.request.get('RaceId','')
+        club = self.request.get('Club','')
+        race = self.request.get('Race','')
+        raceData = RaceData()
+        raceData.name  = race.split(':')[0]
+        raceData.name  = int(race.split(':')[1])
         
         engine=Engine()
-        sailors = engine.GetAllSailors('2356')
+        sailors = engine.GetAllSailors2(club,raceData)
         print "All sailors %s" % (sailors)
 
 
@@ -46,10 +50,10 @@ class Registration(webapp2.RequestHandler):
         template_values = {
             'DataStore': RaceDataStore().urlsafe(),
             'SAILORS'  : sailors,
-            'RACEID'   : raceId
+            'RACEID'   : race
         }
 
-        template = JINJA_ENVIRONMENT.get_template('Registration.html')
+        template = JINJA_ENVIRONMENT.get_template('Registrati/html_form_actionon.html')
         self.response.write(template.render(template_values))
 
 class GetHint(webapp2.RequestHandler):
