@@ -10,6 +10,11 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Club
+  properties:
+  - name: description
+  - name: name
+
 - kind: Greeting
   ancestor: yes
   properties:
@@ -20,6 +25,14 @@ indexes:
   ancestor: yes
   properties:
   - name: date
+    direction: desc
+
+- kind: RaceModel
+  ancestor: yes
+  properties:
+  - name: date
+    direction: desc
+  - name: raceId
     direction: desc
 
 - kind: SailorsData

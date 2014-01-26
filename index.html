@@ -4,34 +4,43 @@
   <head>
     
     <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+    
+    <script>
+        function CreateNewRaceButtonAction()
+        {
+            var element = document.getElementById("ClubSelector")
+            var r=confirm("Really create a new race? " + element.value);
+            if (r==true)
+            {
+            
+              window.location="/NewRace?Club=" + element.value;
+            }
+        }
+    </script>
   </head>
   <body>
     <h1>This is PointLess</h1>
+    <b>club:</b> 
+    <select id="ClubSelector">
+      <option value="{{ ACTIVE_CLUB }}">{{ ACTIVE_CLUB }}</option>
+      {% for club in CLUBS %}
+        <option  value="{{ club.name }}">{{ club.name }}</option>
+      {% endfor %}
+    </select>
+    <div/>
+    <b>Race:</b>
+    <select>
+      <option value="empty">{{ RACES[0] }}</option>
+      {% for race in RACES %}
+        <option id="RaceSelector" value="{{ race }}">{{ race }}</option>
+      {% endfor %}
+    </select>
+    <p/>
+    <button onclick="CreateNewRaceButtonAction()">Create new race</button> 
+    
     <a href="Registration?RaceId={{ RACEID }}">Registration</a>
   
-    {% for greeting in greetings %}
-      {% if greeting.author %}
-        <b>{{ greeting.author.nickname() }}</b> wrote:
-      {% else %}
-       An anonymous person wrote:
-      {% endif %}
-      <blockquote>{{ greeting.content }}</blockquote>
-    {% endfor %}
-
-    <form action="/sign?guestbook_name={{ guestbook_name }}" method="post">
-      <div><textarea name="content" rows="3" cols="60"></textarea></div>
-      <div><input type="submit" value="Sign Guestbook"></div>
-    </form>
-
-    <hr>
-
-    <form>Guestbook name:
-      <input value="{{ guestbook_name }}" name="guestbook_name">
-      <input type="submit" value="switch">
-    </form>
-
-    <a href="{{ url|safe }}">{{ url_linktext }}</a>
-
+    
   </body>
 </html>
 {% endautoescape %}

@@ -39,36 +39,41 @@ class Greeting(ndb.Model):
 class MainPage(webapp2.RequestHandler):
 
     def get(self):
-        guestbook_name = self.request.get('guestbook_name',
-                                          DEFAULT_GUESTBOOK_NAME)
-        greetings_query = Greeting.query(
-            ancestor=guestbook_key(guestbook_name)).order(-Greeting.date)
-        greetings = greetings_query.fetch(10)
-        
+        defaultClubName = 'empty'
+        activeClubName = self.request.get('club',defaultClubName)                
         engine = Engine()
-        currentRace = engine.GetCurrentRace()
-        print "CurrentRace %s" %( currentRace)
-
-        if users.get_current_user():
-            url = users.create_logout_url(self.request.uri)
-            url_linktext = 'Logout'
-        else:
-            url = users.create_login_url(self.request.uri)
-            url_linktext = 'Login'
-
-
         
-        template_values = {
-            'greetings': greetings,
-            'guestbook_name': urllib.quote_plus(guestbook_name),
-            'url': url,
-            'url_linktext': url_linktext,
-            'RACEID':  currentRace.urlsafe()
+        #Locate all clubnames and present those in a list
+        clubs = engine.GetClubs()
+        for club in clubs:
+            if club.name == activeClubName:
+                clubs.remove(club) #The active club is marked active club instead
+                break
+        
+        #Present all races connected to a club in a list (nevest on top)         
+        races = []
+        if activeClubName != defaultClubName:
+            for race in engine.GetAllRaces2(activeClubName):
+                races += [race.GetRaceName() ]
+ 
+        template_values = { 
+            'CLUBS' : clubs,
+            'ACTIVE_CLUB' : activeClubName,
+            'RACES':  races
+            
         }
 
         template = JINJA_ENVIRONMENT.get_template('index.html')
         self.response.write(template.render(template_values))
 
+class NewRace(webapp2.RequestHandler):
+    def get(self):
+        clubName = self.request.get('Club','')
+        engine=Engine()
+        engine.NewRace2(clubName)
+        
+        self.redirect('/?club='+clubName)
+        
 
 class Guestbook(webapp2.RequestHandler):
 
@@ -98,5 +103,6 @@ application = webapp2.WSGIApplication([
     ('/NewSailor',NewSailor),
     ('/gethint',GetHint),
     ('/UnitTest',UnitTestPage),
+    ('/NewRace',NewRace),
 ], debug=True)
 

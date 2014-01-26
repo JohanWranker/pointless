@@ -15,35 +15,100 @@ class SailorModel(ndb.Model):
     boatClass = ndb.StringProperty()
     registrationDate = ndb.DateTimeProperty(auto_now_add=True)
 
+class Club(ndb.Model):
+    name = ndb.StringProperty()
+    description = ndb.StringProperty()
+
+def RaceDataMapper(raceModel):
+    raceData = RaceData()
+    raceData.date   =  raceModel.date
+    raceData.raceId =  raceModel.raceId
+    return raceData
+  
 class Engine():
     def __init__(self):
         self.rootKey = ndb.Key('SailorsDataStore', 'RaceData')
+        
+    def GetClubs(self):
+        key = ndb.Key(Club,'PointLESS')
+        
+        if len(Club.query(ancestor=key).fetch()) == 0:
+            #There are no clubs - let's add a 'demo'
+            demo1 = Club(parent= key)
+            demo1.name = 'Demo1'
+            demo1.description = 'Just for demo..'
+            demo1.put()
+            demo2 = Club(parent= key)
+            demo2.name = 'Demo2'
+            demo2.description = 'Just for demo..(2)'
+            demo2.put()
+            clubs = [demo1]
 
-    def NewRace(self,precedingRace = None):
-         """Creats a new race. Return a token for the day"""
+        clubs = Club.query(ancestor=key).fetch()
+        
+        res = []
+        for club in clubs:
+            res.append(club)
+            
+        return res
+    
+    def GetClubKey(self,clubName):
+        key = ndb.Key(Club,'PointLESS')
+        clubKey = Club.query(Club.name == clubName, ancestor=key).fetch()[0].key
+        
+        #print "The clubKey %s"%(clubKey)
+        return clubKey
+    
+    def NewRace2(self,clubName):
+        """Creats a new race."""
          
-         print "Create a new Race"
-         race = RaceModel(parent = self.rootKey)
-         if not precedingRace:
-            race.raceId = 1
-         else:
-             race.date = precedingRace.date
-             race.raceId = precedingRace.raceId +1
-         race.put()
-         print race
+        #print "Create a new Race"
+        race = RaceModel(parent = self.GetClubKey(clubName))
+        race.put()
+        race.raceId = 1
+        existingRaces = self.GetAllRaces2(clubName)
+        if len(existingRaces)>0 and race.date == existingRaces[0].date:
+            race.raceId = existingRaces[0].raceId +1
+        race.put()
+        #print race
+    
+    def GetAllRaces2(self,clubName):
+        """Returns all races as a list of Race objects, ordered in revers order"""
+        print "Fetch all races for club %s"%(clubName)
+        query = RaceModel.query(ancestor=self.GetClubKey(clubName)).order(-RaceModel.date, -RaceModel.raceId)
+        raceData = map(RaceDataMapper,query.fetch())
+        
+        return raceData
+    
+    def GetActiveRace(self,clubKey):
+        #old
+        """ Return the last race (since that is the active one) """
+        qry = RaceModel.query(RaceModel.date == race.date, RaceModel.raceId == race.raceId)
+        #print qry.fetch()
+        assert (len(qry.fetch()) == 1 )
+        activeRace = qry.fetch(1)[0]
+        return activeRace        
+        
+
+   
          
-    def GetCurrentRace(self):
-        return self.GetAllRaces()[-1].key
+    def GetCurrentRaceId(self):
+        allRaces = self.GetAllRaces()
+        currentRace = "empty"
+        if len(allRaces) > 0:
+            currentRace = allRaces[-1].key.urlsafe()
+        return currentRace
 
     def GetAllRaces(self):
-        """Returns all races as as list of Race objects, ordered in revers order"""
+        #old
+        """Returns all races as a list of Race objects, ordered in revers order"""
         query = RaceModel.query(ancestor=self.rootKey).order(-RaceModel.date)
         return query.fetch()
     
     def _GetRaceKey(self, race):
-        print race
+        #print race
         qry = RaceModel.query(RaceModel.date == race.date, RaceModel.raceId == race.raceId)
-        print qry.fetch()
+        #print qry.fetch()
         assert (len(qry.fetch()) == 1 )
         activeRace = qry.fetch(1)[0]
         return activeRace
@@ -88,9 +153,9 @@ class Engine():
         return sailors
         
     def PreFetchSailorsBySailno(self, sailNo):
-        print "looking for %s" %(int(sailNo))
+        #print "looking for %s" %(int(sailNo))
         sailors = SailorModel.query(SailorModel.tags == int(sailNo)).fetch()
-        print "number %s" % (len(sailors))
+        #print "number %s" % (len(sailors))
         return sailors
         
         
