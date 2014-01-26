@@ -15,7 +15,7 @@ handlers:
   static_dir: js
 
 - url: /.*
-  script: guestbook.application
+  script: main.application
   
 
 libraries:

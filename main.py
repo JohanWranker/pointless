@@ -1,19 +1,20 @@
-import webapp2
+import os
+import urllib
+
 from google.appengine.api import users
+from google.appengine.ext import ndb
 
-class MainPage(webapp2.RequestHandler):
+import jinja2
+import webapp2
 
-    def get(self):
-        user = users.get_current_user()
-
-        if not user:
-            user = "Okänd"
-            
-        self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write('This is PointLess ' + 'Hello, ' + user.nickname())
-
+from Registration import *
+from Index import *
 
 application = webapp2.WSGIApplication([
-    ('/', MainPage),
+    ('/', Index),
+    ('/Registration', Registration),
+    ('/NewSailor',NewSailor),
+    ('/gethint',GetHint),
+    ('/NewRace',NewRace),
 ], debug=True)
 
